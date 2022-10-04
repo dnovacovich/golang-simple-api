@@ -12,14 +12,15 @@ import (
 
 func main() {
 	logger := log.New(os.Stdout, "golang-simple-api-v2", log.LstdFlags)
-	helloHandler := handlers.NewHello(logger)
-	goodByeHandler := handlers.NewGoodBye(logger)
 
+	// creates handlers
+	productHandler := handlers.NewProducts(logger)
+
+	// create a new serve mux and register the handlers
 	serveMux := http.NewServeMux()
+	serveMux.Handle("/", productHandler)
 
-	serveMux.Handle("/", helloHandler)
-	serveMux.Handle("/goodbye", goodByeHandler)
-
+	// create a new server
 	server := &http.Server{
 		Addr:         ":9090",
 		Handler:      serveMux,
@@ -28,6 +29,7 @@ func main() {
 		WriteTimeout: 1 * time.Second,
 	}
 
+	// start the server
 	go func() {
 		err := server.ListenAndServe()
 		if err != nil {
